@@ -9,6 +9,13 @@ from nltk.tree import Tree
 
 class OntonotesSent:
 
+    WORD_ID_COL = 2
+    WORD_COL = 3
+    POS_COL = 4
+    TREE_COL = 5
+    NE_COL = 10
+    COREF_COL = -1
+
     def __init__(self, sent_id, conll_sentence):
         self._id = sent_id
         self._words = []
@@ -22,15 +29,17 @@ class OntonotesSent:
     def process_conll(self, conll_sentence):
         tree_str = ""
         coref_stack = {}
+        ne_stack = []
         for line in conll_sentence:
-            word = line[3]
-            pos = line[4]
-            word_id = int(line[2])
+            word = line[self.WORD_COL]
+            pos = line[self.POS_COL]
+            word_id = int(line[self.WORD_ID_COL])
             self._words.append(word)
             self._pos.append(pos)
             word_pos = f"({pos} {word})"
-            tree_str += line[5].replace("*", word_pos)
-            coref = line[-1]
+            tree_str += line[self.TREE_COL].replace("*", word_pos)
+            # Read coreference information.
+            coref = line[self.COREF_COL]
             if not coref.startswith("-"):
                 coref_split = coref.split("|")
                 for coref in coref_split:
@@ -42,7 +51,25 @@ class OntonotesSent:
                         start = coref_stack[coref_id].pop()
                         self._coref.setdefault(coref_id, [])
                         self._coref[coref_id].append((start, word_id+1))
-        self._tree = Tree.fromstring(tree_str)
+            # Read named entity information.
+            ne = line[self.NE_COL]
+            if not ne.startswith("*"):
+                ne = ne.strip("(").strip(")")
+                if not ne.endswith("*"):
+                    self._ne.setdefault(ne, [])
+                    self._ne[ne].append((word_id, word_id+1))
+                else:
+                    ne = ne.strip("*")
+                    ne_stack.append((ne, word_id))
+            else:
+                if ne.endswith(")"):
+                    ne_type, start = ne_stack.pop()
+                    self._ne.setdefault(ne_type, [])
+                    self._ne[ne_type].append((start, word_id+1))
+        try:
+            self._tree = Tree.fromstring(tree_str)
+        except ValueError as e:
+            print(f"IGNORED {self._id}")
 
     def words(self, tagged=True):
         if tagged:

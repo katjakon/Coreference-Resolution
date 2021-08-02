@@ -8,24 +8,19 @@ import os
 
 from ontonotes_sent import OntonotesSent
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
-
 
 class OntonotesDoc:
 
-    def __init__(self, doc_id, path, ignore=False):
+    def __init__(self, doc_id, path):
         self._id = doc_id
         self.path = path
-        self._sentences = self.read_sentences(ignore=ignore)
+        self._sentences = self.read_sentences()
 
-    def read_sentences(self, ignore):
+    def read_sentences(self):
         sentences = []
         tmp_sentence = []
         sent_id = 0
-        with open(os.path.join(ROOT, self.path)) as doc_file:
-            ignore = int(ignore)
-            for i in range(ignore):
-                doc_file.readline()
+        with open(os.path.join(self.path), encoding="utf-8") as doc_file:
             for line in doc_file:
                 if line.startswith("#"):
                     continue
@@ -54,5 +49,18 @@ class OntonotesDoc:
         #             chains[coref].append(self[sent_id][start:end])
         return coref_dict
 
+    def named_entities(self):
+        ne_dict = dict()
+        for sent in self._sentences:
+            ne_dict[sent._id] = sent._ne
+        return ne_dict
+
     def __getitem__(self, index):
         return self._sentences[index]
+
+
+if __name__ == "__main__":
+    f = "bc_cctv_0002.v4_auto_conll"
+    doc = OntonotesDoc(0, f)
+    ne = doc.named_entities()
+    print(ne)
