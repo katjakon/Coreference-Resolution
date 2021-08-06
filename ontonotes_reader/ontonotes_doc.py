@@ -6,7 +6,7 @@ Created on Tue Jul 13 12:45:58 2021
 """
 import os
 
-from ontonotes_sent import OntonotesSent
+from .ontonotes_sent import OntonotesSent
 
 
 class OntonotesDoc:
@@ -14,9 +14,9 @@ class OntonotesDoc:
     def __init__(self, doc_id, path):
         self._id = doc_id
         self.path = path
-        self._sentences = self.read_sentences()
+        self._sentences = self._read_sentences()
 
-    def read_sentences(self):
+    def _read_sentences(self):
         sentences = []
         tmp_sentence = []
         sent_id = 0
@@ -32,35 +32,28 @@ class OntonotesDoc:
                     tmp_sentence = []
                 else:
                     tmp_sentence.append(line.split())
+            if tmp_sentence:
+                sentence = OntonotesSent(sent_id, tmp_sentence)
+                sentences.append(sentence)
         return sentences
 
     def coreference_chains(self):
         coref_dict = dict()
-        chains = dict()
         for sentence in self._sentences:
-            for coref in sentence._coref:
+            sent_coref = sentence.coreference()
+            for coref in sent_coref:
                 coref_dict.setdefault(coref, {})
-                coref_dict[coref].setdefault(sentence._id, [])
-                coref_dict[coref][sentence._id].extend(sentence._coref[coref])
-        # for coref in coref_dict:
-        #     for sent_id in coref_dict[coref]:
-        #         for start, end in coref_dict[coref][sent_id]:
-        #             chains.setdefault(coref, [])
-        #             chains[coref].append(self[sent_id][start:end])
+                coref_dict[coref][sentence.index] = sent_coref[coref]
         return coref_dict
 
     def named_entities(self):
         ne_dict = dict()
         for sent in self._sentences:
-            ne_dict[sent._id] = sent._ne
+            ne_dict[sent.index] = sent._ne
         return ne_dict
 
     def __getitem__(self, index):
         return self._sentences[index]
 
-
-if __name__ == "__main__":
-    f = "bc_cctv_0002.v4_auto_conll"
-    doc = OntonotesDoc(0, f)
-    ne = doc.named_entities()
-    print(ne)
+    def __iter__(self):
+        return iter(self._sentences)

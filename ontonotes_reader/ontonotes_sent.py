@@ -15,6 +15,7 @@ class OntonotesSent:
     TREE_COL = 5
     NE_COL = 10
     COREF_COL = -1
+    DELIMITER = "_"
 
     def __init__(self, sent_id, conll_sentence):
         self._id = sent_id
@@ -28,7 +29,7 @@ class OntonotesSent:
 
     def process_conll(self, conll_sentence):
         tree_str = ""
-        coref_stack = {}
+        coref_stack = dict()
         ne_stack = []
         for line in conll_sentence:
             word = line[self.WORD_COL]
@@ -36,7 +37,9 @@ class OntonotesSent:
             word_id = int(line[self.WORD_ID_COL])
             self._words.append(word)
             self._pos.append(pos)
-            word_pos = f"({pos} {word})"
+            # Adding the index of a word to the tree helps
+            # to identify spanning subtrees.
+            word_pos = f"({pos} {word}{self.DELIMITER}{word_id})"
             tree_str += line[self.TREE_COL].replace("*", word_pos)
             # Read coreference information.
             coref = line[self.COREF_COL]
@@ -66,15 +69,29 @@ class OntonotesSent:
                     ne_type, start = ne_stack.pop()
                     self._ne.setdefault(ne_type, [])
                     self._ne[ne_type].append((start, word_id+1))
+        # Some tree strings from ontonotes seem to be malformed
         try:
             self._tree = Tree.fromstring(tree_str)
         except ValueError as e:
             print(f"IGNORED {self._id}")
 
+    def named_entities(self):
+        return self.ne
+
+    def coreference(self):
+        return self._coref
+
+    def tree(self):
+        return self._tree
+
     def words(self, tagged=True):
         if tagged:
             return list(zip(self._words, self._pos))
         return self._words
+
+    @property
+    def index(self):
+        return self._id
 
     def __getitem__(self, index):
         return self._words[index]
