@@ -39,8 +39,7 @@ class Clusters:
         return mention.words
 
     def sentence_tree(self, mention):
-        sentence_index = mention.id[0]
-        return self._doc[sentence_index].tree()
+        return self._doc[mention.index()].tree()
 
     def find(self, mention):
         return mention.pointer
@@ -120,7 +119,10 @@ class Clusters:
         return string
 
     def __getitem__(self, mention):
-        return self.clusters[mention]
+        if isinstance(mention, tuple):
+            mention = self.mentions[mention]
+        repr_ment = self.find(mention)
+        return self.clusters[repr_ment]
 
     def __iter__(self):
         clusters = ((first, self.clusters[first]) for first in self.clusters)
