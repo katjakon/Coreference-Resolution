@@ -3,7 +3,7 @@
 Class that represents a mention aka a referential expression.
 A mention is definded by a unique id consisting of (sentence_index, start, end)
 """
-from nltk.Tree import Tree
+from nltk.tree import Tree
 
 
 class Mention:
@@ -34,6 +34,12 @@ class Mention:
     # TODO: Determine the head noun of a mention.
     def head(self):
         pass
+
+    def span(self):
+        return self.id[1], self.id[2]
+
+    def index(self):
+        return self.id[0]
 
     def __hash__(self):
         return hash(self.id)
