@@ -3,6 +3,7 @@
 A class that represents clusters in a document.
 Clusters are essentially a disjoint-set structure.
 """
+from collections import deque
 
 from nltk.tree import Tree
 
@@ -52,10 +53,11 @@ class Clusters:
             return False
         # Perfom union of mentions and delete second (later) cluster.
         second_mentions = self.clusters.pop(repr_second)
-        self.clusters[repr_first] = self.clusters[repr_first].union(second_mentions)
+        first_mentions = self.clusters[repr_first]
+        self.clusters[repr_first] = first_mentions.union(second_mentions)
         # Set new pointers for all mentions in second cluster
-        for m in second_mentions:
-            m.pointer = repr_first
+        for mention in second_mentions:
+            mention.pointer = repr_first
         return True
 
     # Get all possible antecdents sorted
@@ -74,7 +76,7 @@ class Clusters:
                             for start, end in prev_sent]
         # Get mentions in same sentence
         tree = self._doc[index].tree()
-        same_sent = self.bfs(tree, mention_id=mention.id)
+        same_sent = self.bfs(tree, mention=mention)
         same_sent_id = [self.mentions[(index, start, end)]
                         for start, end in same_sent]
         return same_sent_id, prev_sent_id
@@ -86,28 +88,24 @@ class Clusters:
         end = int(leaves[-1].split(self.DELIMITER)[-1]) + 1
         return start, end
 
-    # TODO: Make this a generator instead of a function
-    def bfs(self, tree, left_to_right=True, mention_id=None):
-        queue = []
-        spans = []
+    def bfs(self, tree, left_to_right=True, mention=None):
+        queue = deque()
         queue.append(tree)
         while queue:
-            next_tree = queue.pop(0)
+            next_tree = queue.popleft()
             if next_tree.label() in self.RE:
                 span = self._get_leaves_span(next_tree)
-                # When we get to mention_id,
-                # all possible antecendens have been found.
-                if mention_id:
-                    if span == mention_id[1:]:
-                        break
-                spans.append(span)
-            children = [child for child in next_tree]
+                if mention:
+                    # If this is the case we have reached the mention,
+                    # and don't need to look for more antecedents.
+                    if span == mention.span():
+                        return
+                yield span
             if not left_to_right:
-                children.reverse()
-            for child in children:
+                next_tree = reversed(next_tree)
+            for child in next_tree:
                 if isinstance(child, Tree):
                     queue.append(child)
-        return spans
 
     def unresolved(self):
         unresolved = list(self.clusters.keys())
