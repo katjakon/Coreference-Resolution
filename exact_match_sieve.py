@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 A class that represents the exact sieve.
-It gets clusters as input and links mentions if they are the same string.
+It resolves cluster by linking mentions if they are the same string.
 """
+from abstract_sieve import AbstractSieve
 
 
-# TODO: Implement abstract class Sieve that has method resolve.
-class ExactMatchSieve:
+class ExactMatchSieve(AbstractSieve):
 
     def resolve(self, cluster):
         unresolved = cluster.unresolved()
