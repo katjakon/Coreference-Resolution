@@ -107,10 +107,9 @@ class Clusters:
                     queue.append(child)
 
     def unresolved(self):
-        unresolved = list(self.clusters.keys())
         # Mentions are sorted by sentence index first,
         # start and end index second.
-        return sorted(unresolved, key=lambda m: m.id)
+        return sorted(self.clusters.keys(), key=lambda m: m.id)
 
     def __str__(self):
         string = f"<ClustersObject with {len(self.clusters)} Clusters>\n"
