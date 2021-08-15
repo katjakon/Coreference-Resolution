@@ -3,7 +3,7 @@
 A class that represents the not i-within-i Feature
 """
 
-from abstract_feature import AbstractMentionFeature
+from features.abstract_feature import AbstractMentionFeature
 
 
 class NotIWithinI(AbstractMentionFeature):

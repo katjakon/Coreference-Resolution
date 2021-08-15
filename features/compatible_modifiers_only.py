@@ -6,7 +6,7 @@ Created on Sun Aug 15 11:34:09 2021
 """
 import re
 
-from abstract_feature import AbstractMentionFeature
+from features.abstract_feature import AbstractMentionFeature
 
 
 class CompatibleModifiersOnly(AbstractMentionFeature):
