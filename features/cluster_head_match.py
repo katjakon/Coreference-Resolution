@@ -3,10 +3,10 @@
 A feature that represents the Cluster Head Matching
 """
 
-from abstract_feature import AbstractFeature
+from abstract_feature import AbstractClusterFeature
 
 
-class ClusterHeadMatch(AbstractFeature):
+class ClusterHeadMatch(AbstractClusterFeature):
 
     def has_feature(self, cluster, antecedent, mention):
         head_ment = mention.head()

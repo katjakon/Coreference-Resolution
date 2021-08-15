@@ -3,10 +3,10 @@
 A class that represents the not i-within-i Feature
 """
 
-from abstract_feature import AbstractFeature
+from abstract_feature import AbstractMentionFeature
 
 
-class NotIWithinI(AbstractFeature):
+class NotIWithinI(AbstractMentionFeature):
 
     def has_feature(self, mention1, mention2):
         # A i within i construction can only appear in same sentence.
