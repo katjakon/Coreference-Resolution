@@ -3,7 +3,7 @@
 A feature that represents the Cluster Head Matching
 """
 
-from abstract_feature import AbstractClusterFeature
+from features.abstract_feature import AbstractClusterFeature
 
 
 class ClusterHeadMatch(AbstractClusterFeature):

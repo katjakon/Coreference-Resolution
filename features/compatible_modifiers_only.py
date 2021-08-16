@@ -6,7 +6,7 @@ Created on Sun Aug 15 11:34:09 2021
 """
 import re
 
-from abstract_feature import AbstractMentionFeature
+from features.abstract_feature import AbstractMentionFeature
 
 
 class CompatibleModifiersOnly(AbstractMentionFeature):
@@ -26,7 +26,6 @@ class CompatibleModifiersOnly(AbstractMentionFeature):
         head = mention.head()
         modifiers = set()
         for token, pos in pos:
-            token = token.split("_")[0]
             for mod in self.modifiers:
                 if re.match(mod, pos) and token != head:
                     modifiers.add(token)
