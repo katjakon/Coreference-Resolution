@@ -4,11 +4,11 @@ Strict Head Matching Sieve
 """
 
 from abstract_sieve import AbstractSieve
-from abstract_feature import AbstractMentionFeature, AbstractClusterFeature
-from cluster_head_match import ClusterHeadMatch
-from compatible_modifiers_only import CompatibleModifiersOnly
-from not_i_within_i import NotIWithinI
-from word_inclusion import WordInclusion
+from features.abstract_feature import AbstractMentionFeature, AbstractClusterFeature
+from features.cluster_head_match import ClusterHeadMatch
+from features.compatible_modifiers_only import CompatibleModifiersOnly
+from features.not_i_within_i import NotIWithinI
+from features.word_inclusion import WordInclusion
 
 
 class StrictHeadMatchSieve(AbstractSieve):
