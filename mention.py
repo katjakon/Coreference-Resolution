@@ -34,9 +34,15 @@ class Mention:
                 return self.pronominal(child)
         return False
 
-    # TODO: Determine if a mention is indefinite or not.
     def indefinite(self):
-        pass
+        # If there is a determiner, it is most likely the first word.
+        first = self.tree.leaves()[0]
+        # If it is an indefinite determiner, return True
+        if first in self.INDEFINTIE:
+            return True
+        # This is a very relaxed heuristic,
+        # especially for bare NP like "[children] were crying"
+        return False
 
     def head(self, tree=None):
         if tree is None:
