@@ -8,10 +8,12 @@ import re
 from nltk.tree import Tree
 
 
+# TODO: Some features are computed repeatedly, even though they don't change.
 class Mention:
 
     PRONOUNS = {"PRP", "DT", "PRP$"}
     NOMINAL = re.compile(r"NN?P?S?")
+    INDEFINTIE = {"a", "an", "some", "no", "most", "any", "few", "many", "several"}
 
     def __init__(self, mention_id, tree, words):
         self.id = mention_id
@@ -36,14 +38,18 @@ class Mention:
 
     # TODO: Determine if a mention is indefinite or not.
     def indefinite(self):
-        pass
+        first = self.tree.leaves()[0]
+        if first in self.INDEFINTIE:
+            return True
+        return False
 
+    # TODO: Deal with Coordination.
     def head(self, tree=None):
         if tree is None:
             tree = self.tree
         # Base case: tree is pre-terminal.
         if len(tree) == 1 and not isinstance(tree[0], Tree):
-            return tree[0].split("_")[0]
+            return tree.leaves()[0]
         # Because of right headedness, we search for the first
         # nominal constituent from right to left in all children.
         for i in range(len(tree)-1, -1, -1):
