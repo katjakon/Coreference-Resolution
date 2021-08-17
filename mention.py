@@ -37,19 +37,25 @@ class Mention:
         return False
 
     # TODO: Determine if a mention is indefinite or not.
-    def indefinite(self):
-        first = self.tree.leaves()[0]
-        if first in self.INDEFINTIE:
-            return True
-        return False
+    def indefinite(self, tree=None):
+        if tree is None:
+            tree = self.tree
+        first = tree[0]
+        if not isinstance(first, Tree):
+            if first[0] in self.INDEFINTIE:
+                return True
+            else:
+                return False
+        return self.indefinite(first)
 
     # TODO: Deal with Coordination.
     def head(self, tree=None):
         if tree is None:
             tree = self.tree
-        # Base case: tree is pre-terminal.
-        if len(tree) == 1 and not isinstance(tree[0], Tree):
-            return tree.leaves()[0]
+        # Base case: tree is a leaf.
+        if not isinstance(tree, Tree):
+            # Leaves are tuples of (token, index)
+            return tree[0]
         # Because of right headedness, we search for the first
         # nominal constituent from right to left in all children.
         for i in range(len(tree)-1, -1, -1):

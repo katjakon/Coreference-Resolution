@@ -11,14 +11,15 @@ class IndexedTree(ParentedTree):
 
     def __init__(self, label, children=None, delimiter="_"):
         super().__init__(label, children)
-        self.delimiter = delimiter
         self.indexed = False
 
     def index(self):
         if not self.indexed:
             leaf_pos = self.treepositions("leaves")
             for idx, leaf in enumerate(leaf_pos):
-                self[leaf] = f"{self[leaf]}{self.delimiter}{idx}"
+                # str(idx) is used because,
+                # print methods won't work otherwise.
+                self[leaf] = (self[leaf], str(idx))
             self._set_indexed()
 
     def _set_indexed(self):
@@ -27,11 +28,11 @@ class IndexedTree(ParentedTree):
             if isinstance(child, IndexedTree):
                 child._set_indexed()
 
-    def _token(self, string):
-        return string.split(self.delimiter)[0]
+    def _token(self, leaf):
+        return leaf[0]
 
-    def _index(self, string):
-        return int(string.split(self.delimiter)[1])
+    def _index(self, leaf):
+        return int(leaf[1])
 
     def span(self):
         if self.indexed:
