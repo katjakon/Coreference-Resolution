@@ -26,7 +26,6 @@ class CompatibleModifiersOnly(AbstractMentionFeature):
         head = mention.head()
         modifiers = set()
         for token, pos in pos:
-            token = token.split("_")[0]
             for mod in self.modifiers:
                 if re.match(mod, pos) and token != head:
                     modifiers.add(token)

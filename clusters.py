@@ -26,7 +26,7 @@ class Clusters:
         for sentence in self._doc:
             tree = sentence.tree()
             for subt in tree.subtrees(filter=lambda t: t.label() in self.RE):
-                start, end = self._get_leaves_span(subt)
+                start, end = subt.span()
                 mention_id = (sentence.index, start, end)
                 mention = Mention(mention_id,
                                   subt,
@@ -80,20 +80,13 @@ class Clusters:
                         for start, end in same_sent]
         return same_sent_id, prev_sent_id
 
-    # TODO: What if tree is not indexed?
-    def _get_leaves_span(self, tree):
-        leaves = tree.leaves()
-        start = int(leaves[0].split(self.DELIMITER)[-1])
-        end = int(leaves[-1].split(self.DELIMITER)[-1]) + 1
-        return start, end
-
     def bfs(self, tree, left_to_right=True, mention=None):
         queue = deque()
         queue.append(tree)
         while queue:
             next_tree = queue.popleft()
             if next_tree.label() in self.RE:
-                span = self._get_leaves_span(next_tree)
+                span = next_tree.span()
                 if mention:
                     # If this is the case we have reached the mention,
                     # and don't need to look for more antecedents.

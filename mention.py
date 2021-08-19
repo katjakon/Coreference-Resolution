@@ -8,10 +8,12 @@ import re
 from nltk.tree import Tree
 
 
+# TODO: Some features are computed repeatedly, even though they don't change.
 class Mention:
 
     PRONOUNS = {"PRP", "DT", "PRP$"}
     NOMINAL = re.compile(r"NN?P?S?")
+    INDEFINTIE = {"a", "an", "some", "no", "most", "any", "few", "many", "several"}
 
     def __init__(self, mention_id, tree, words):
         self.id = mention_id
@@ -34,22 +36,29 @@ class Mention:
                 return self.pronominal(child)
         return False
 
-    def indefinite(self):
-        # If there is a determiner, it is most likely the first word.
-        first = self.tree.leaves()[0]
-        # If it is an indefinite determiner, return True
-        if first in self.INDEFINTIE:
-            return True
-        # This is a very relaxed heuristic,
-        # especially for bare NP like "[children] were crying"
-        return False
+    def indefinite(self, tree=None):
+        if tree is None:
+            tree = self.tree
+        # If there is a determiner, it is most likely in the first
+        # constituent.
+        first = tree[0]
+        if not isinstance(first, Tree):
+            if first[0] in self.INDEFINTIE:
+                return True
+            # Obviously, this is a very relaxed heuristic,
+            # e.g. bare NPs will always be interpreted as definite.
+            else:
+                return False
+        return self.indefinite(first)
 
+    # TODO: Deal with Coordination.
     def head(self, tree=None):
         if tree is None:
             tree = self.tree
-        # Base case: tree is pre-terminal.
-        if len(tree) == 1 and not isinstance(tree[0], Tree):
-            return tree[0].split("_")[0]
+        # Base case: tree is a leaf.
+        if not isinstance(tree, Tree):
+            # Leaves are tuples of (token, index)
+            return tree[0]
         # Because of right headedness, we search for the first
         # nominal constituent from right to left in all children.
         for i in range(len(tree)-1, -1, -1):

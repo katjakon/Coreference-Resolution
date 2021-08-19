@@ -4,6 +4,7 @@ Created on Tue Jul 13 12:47:36 2021
 
 @author: HP I5
 """
+from ontonotes_reader.indexed_tree import IndexedTree
 from nltk.tree import Tree
 
 
@@ -37,9 +38,7 @@ class OntonotesSent:
             word_id = int(line[self.WORD_ID_COL])
             self._words.append(word)
             self._pos.append(pos)
-            # Adding the index of a word to the tree helps
-            # to identify spanning subtrees.
-            word_pos = f"({pos} {word}{self.DELIMITER}{word_id})"
+            word_pos = f"({pos} {word})"
             tree_str += line[self.TREE_COL].replace("*", word_pos)
             # Read coreference information.
             coref = line[self.COREF_COL]
@@ -71,7 +70,10 @@ class OntonotesSent:
                     self._ne[ne_type].append((start, word_id+1))
         # Some tree strings from ontonotes seem to be malformed
         try:
-            self._tree = Tree.fromstring(tree_str)
+            self._tree = IndexedTree.fromstring(tree_str)
+            # Indexing the tree helps
+            # to identify spanning subtrees.
+            self._tree.index()
         except ValueError as e:
             print(f"IGNORED {self._id}")
 
