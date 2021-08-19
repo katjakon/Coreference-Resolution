@@ -5,7 +5,15 @@ Created on Tue Aug 17 21:35:17 2021
 @author: HP I5
 """
 
+
 class Appositive:
+
+    def __init__(self, allowed_labels=(",",), allowed_len=3):
+        self.allowed_labels = allowed_labels
+        if allowed_len < 2:
+            raise Exception("Appostive Construction "
+                            "must allow at least 2 children.")
+        self.allowed_len = allowed_len
 
     def has_feature(self, antecedent, mention):
         ment_tree = mention.tree
@@ -20,14 +28,15 @@ class Appositive:
                 # By using "is" it is ensured parents are the same object,
                 # and don't just appear the same.
                 if parent_ant is parent_ment:
-                    # We allow for an additional punctuation mark in children.
-                    if len(parent_ant) <= 3:
+                    # We allow for additional children
+                    # according to the instance attributes.
+                    if len(parent_ant) <= self.allowed_len:
                         appositive = True
                         for child in parent_ant:
                             is_ant = child is ant_tree
                             is_ment = child is ment_tree
-                            is_punc = child.label() == ","
-                            if not (is_ant or is_ment or is_punc):
+                            is_allowed = child.label() in self.allowed_labels
+                            if not (is_ant or is_ment or is_allowed):
                                 appositive = False
                         if appositive:
                             return True
