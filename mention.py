@@ -15,11 +15,18 @@ class Mention:
     NOMINAL = re.compile(r"NN?P?S?")
     INDEFINTIE = {"a", "an", "some", "no", "most", "any", "few", "many", "several"}
 
-    def __init__(self, mention_id, tree, words):
+    def __init__(self, mention_id, tree):
         self.id = mention_id
         self.pointer = self
         self.tree = tree
-        self.words = words
+
+    @property
+    def words(self):
+        return self.tree.leaves()
+
+    @property
+    def pos(self):
+        return self.tree.pos()
 
     def pronominal(self, tree=None):
         if tree is None:

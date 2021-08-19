@@ -14,6 +14,7 @@ class OntonotesSent:
     WORD_COL = 3
     POS_COL = 4
     TREE_COL = 5
+    LEMMA_COL = 6
     NE_COL = 10
     COREF_COL = -1
     DELIMITER = "_"
@@ -23,6 +24,7 @@ class OntonotesSent:
         self._words = []
         self._tree = None
         self._pos = []
+        self._lemma = []
         self._ne = dict()
         self._coref = dict()
 
@@ -35,6 +37,10 @@ class OntonotesSent:
         for line in conll_sentence:
             word = line[self.WORD_COL]
             pos = line[self.POS_COL]
+            lemma = line[self.LEMMA_COL]
+            if lemma == "-":
+                lemma = None
+            self._lemma.append(lemma)
             word_id = int(line[self.WORD_ID_COL])
             self._words.append(word)
             self._pos.append(pos)
@@ -90,6 +96,11 @@ class OntonotesSent:
         if tagged:
             return list(zip(self._words, self._pos))
         return self._words
+
+    def lemma(self, token=False):
+        if token:
+            return list(zip(self._words, self._lemma))
+        return self._lemma
 
     @property
     def index(self):
