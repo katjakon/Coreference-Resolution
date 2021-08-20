@@ -13,7 +13,7 @@ class Mention:
 
     PRONOUNS = {"PRP", "DT", "PRP$"}
     NOMINAL = re.compile(r"NN?P?S?")
-    INDEFINTIE = {"a", "an", "some", "no", "most", "any", "few", "many", "several"}
+    INDEFINTIE = {"a", "an", "some", "no", "most", "any", "few", "many", "several", "there"}
 
     def __init__(self, mention_id, tree):
         self.id = mention_id
@@ -50,7 +50,7 @@ class Mention:
         # constituent.
         first = tree[0]
         if not isinstance(first, Tree):
-            if first[0] in self.INDEFINTIE:
+            if first[0].lower() in self.INDEFINTIE:
                 return True
             # Obviously, this is a very relaxed heuristic,
             # e.g. bare NPs will always be interpreted as definite.
@@ -58,7 +58,6 @@ class Mention:
                 return False
         return self.indefinite(first)
 
-    # TODO: Deal with Coordination.
     def head(self, tree=None):
         if tree is None:
             tree = self.tree
