@@ -15,9 +15,9 @@ class StrictHeadMatchSieve(AbstractSieve):
 
     def __init__(self, lang="english", modifiers=(r"JJ[R|S]?", r"NNP?S?")):
         self.cluster_features = [ClusterHeadMatch(),
-                                 WordInclusion(lang)]
-        self.mention_features = (NotIWithinI(),
-                                 CompatibleModifiersOnly(modifiers))
+                                 WordInclusion(lang),
+                                 NotIWithinI()]
+        self.mention_features = (CompatibleModifiersOnly(modifiers),)
 
     def resolve(self, cluster):
         unresolved = cluster.unresolved()

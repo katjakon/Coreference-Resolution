@@ -17,13 +17,14 @@ class StrictHeadRelaxModifiers(StrictHeadMatchSieve):
 
     def __init__(self, lang="english"):
         self.cluster_features = (ClusterHeadMatch(),
-                                 WordInclusion(lang))
-        self.mention_features = (NotIWithinI(),)
+                                 WordInclusion(lang),
+                                 NotIWithinI())
+        self.mention_features = ()
 
 
 class StrictHeadRelaxInclusion(StrictHeadMatchSieve):
 
     def __init__(self, modifiers=(r"JJ[R|S]?", r"NNP?S?")):
-        self.cluster_features = (ClusterHeadMatch(),)
-        self.mention_features = (NotIWithinI(),
-                                 CompatibleModifiersOnly(modifiers))
+        self.cluster_features = (ClusterHeadMatch(),
+                                 NotIWithinI())
+        self.mention_features = (CompatibleModifiersOnly(modifiers),)
