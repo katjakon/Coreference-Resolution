@@ -28,9 +28,7 @@ class Clusters:
             for subt in tree.subtrees(filter=lambda t: t.label() in self.RE):
                 start, end = subt.span()
                 mention_id = (sentence.index, start, end)
-                mention = Mention(mention_id,
-                                  subt,
-                                  self._doc[sentence.index][start:end])
+                mention = Mention(mention_id, subt)
                 self.clusters[mention] = {mention}
                 self.mentions[mention_id] = mention
 
@@ -38,8 +36,8 @@ class Clusters:
     def words(self, mention):
         return mention.words
 
-    def sentence_tree(self, mention):
-        return self._doc[mention.index()].tree()
+    def sentence(self, mention):
+        return self._doc[mention.index()]
 
     def find(self, mention):
         return mention.pointer
