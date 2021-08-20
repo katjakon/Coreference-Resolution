@@ -20,12 +20,8 @@ class Acronyms:
             return False
 
     def _is_proper(self, mention):
-        return all(pos in self.tags for _, pos in mention.tree.pos())
+        return all(pos in self.tags for _, pos in mention.pos)
 
     def _upper_letters(self, words):
-        upper = []
-        for word in words:
-            for letter in word:
-                if letter.isupper():
-                    upper.append(letter)
+        upper = (letter for w in words for letter in w if letter.isupper())
         return ["".join(upper)]

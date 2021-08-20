@@ -22,7 +22,7 @@ class CompatibleModifiersOnly(AbstractMentionFeature):
         return False
 
     def _extract_modifiers(self, mention):
-        pos = mention.tree.pos()
+        pos = mention.pos
         head = mention.head()
         modifiers = set()
         for token, pos in pos:

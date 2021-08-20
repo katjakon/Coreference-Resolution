@@ -50,7 +50,7 @@ class PredicateNominative:
             if isinstance(child, Tree) and child.label().startswith("V"):
                 index_verb = idx
                 n_verbs += 1
-        return self._get_predicate(vp[index_verb])
+        return self._get_verb(vp[index_verb])
 
     def _get_parent(self, mention, parent_label):
         parent = mention.tree.parent()

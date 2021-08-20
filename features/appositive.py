@@ -22,7 +22,7 @@ class Appositive:
         if antecedent.index() == mention.index():
             parent_ant = ant_tree.parent()
             parent_ment = ment_tree.parent()
-            # We might reach the root by calling parent().
+            # We might be at the root when calling parent().
             if not (parent_ant is None or parent_ment is None):
                 # This means they have the same parent.
                 # By using "is" it is ensured parents are the same object,
