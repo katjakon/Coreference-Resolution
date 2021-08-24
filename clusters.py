@@ -12,7 +12,6 @@ from mention import Mention
 
 class Clusters:
 
-    DELIMITER = "_"
     RE = {"NP", "PRP$"}
 
     def __init__(self, doc):
@@ -31,10 +30,6 @@ class Clusters:
                 mention = Mention(mention_id, subt)
                 self.clusters[mention] = {mention}
                 self.mentions[mention_id] = mention
-
-    # TODO: Determine if this methods is necessary.
-    def words(self, mention):
-        return mention.words
 
     def sentence(self, mention):
         return self._doc[mention.index()]
@@ -57,28 +52,33 @@ class Clusters:
             mention.pointer = repr_first
         return True
 
-    # Get all possible antecdents sorted
     def antecedents(self, mention):
+        # We have seen this mention before and extracted its antecedents.
+        if mention.antecedents:
+            return mention.antecedents
         index, start, end = mention.id
         prev = index - 1
         # Get mentions in previous sentence
-        prev_sent_id = []
-        is_pronominal = mention.pronominal()
+        prev_sent = []
         if prev >= 0:
             prev_tree = self._doc[prev].tree()
             # If a mention is pronominal, we search left to right,
             # otherwise we search right to left.
-            prev_sent = self.bfs(prev_tree, left_to_right=is_pronominal)
-            prev_sent_id = [self.mentions[(prev, start, end)]
-                            for start, end in prev_sent]
+            prev_sent = self._bfs(prev_tree, left_to_right=mention.pronominal)
         # Get mentions in same sentence
         tree = self._doc[index].tree()
-        same_sent = self.bfs(tree, mention=mention)
+        same_sent = self._bfs(tree, mention=mention)
+        # Get the mention objects from the mention id.
         same_sent_id = [self.mentions[(index, start, end)]
                         for start, end in same_sent]
-        return same_sent_id, prev_sent_id
+        prev_sent_id = [self.mentions[(prev, start, end)]
+                        for start, end in prev_sent]
+        # Set antecedents for mention to avoid unnecessary computations.
+        antecedents = same_sent_id + prev_sent_id
+        mention.antecedents = antecedents
+        return antecedents
 
-    def bfs(self, tree, left_to_right=True, mention=None):
+    def _bfs(self, tree, left_to_right=True, mention=None):
         queue = deque()
         queue.append(tree)
         while queue:
@@ -113,10 +113,3 @@ class Clusters:
             mention = self.mentions[mention]
         repr_ment = self.find(mention)
         return self.clusters[repr_ment]
-
-    def __iter__(self):
-        clusters = ((first, self.clusters[first]) for first in self.clusters)
-        return iter(clusters)
-
-    def __next__(self):
-        return next(iter(self))

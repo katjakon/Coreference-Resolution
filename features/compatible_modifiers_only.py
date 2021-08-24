@@ -4,14 +4,12 @@ Created on Sun Aug 15 11:34:09 2021
 
 @author: HP I5
 """
-import re
-
 from features.abstract_feature import AbstractMentionFeature
 
 
 class CompatibleModifiersOnly(AbstractMentionFeature):
 
-    def __init__(self, modifiers=(r"JJ[R|S]?", r"NNP?S?")):
+    def __init__(self, modifiers={"JJ", "JJR", "JJS", "NN", "NNP", "NNS"}):
         self.modifiers = modifiers
 
     def has_feature(self, antecedent, mention):
@@ -23,10 +21,9 @@ class CompatibleModifiersOnly(AbstractMentionFeature):
 
     def _extract_modifiers(self, mention):
         pos = mention.pos
-        head = mention.head()
+        head = mention.head
         modifiers = set()
         for token, pos in pos:
-            for mod in self.modifiers:
-                if re.match(mod, pos) and token != head:
-                    modifiers.add(token)
+            if pos in self.modifiers and token != head:
+                modifiers.add(token)
         return modifiers

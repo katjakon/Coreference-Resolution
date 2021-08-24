@@ -12,12 +12,10 @@ class ExactMatchSieve(AbstractSieve):
         unresolved = cluster.unresolved()
         for mention in unresolved:
             # Sieve only operates on nominal mentions.
-            if not mention.pronominal():
-                same_ant, prev_ant = cluster.antecedents(mention)
+            if not mention.pronominal:
                 # Iterates first over antecedents from same,
                 # then from previous sentence.
-                all_antecedents = same_ant + prev_ant
-                for mention_ant in all_antecedents:
+                for mention_ant in cluster.antecedents(mention):
                     if self.is_exact_match(mention_ant, mention):
                         cluster.merge(mention_ant, mention)
                         # mention is now assigned to a cluster, so we

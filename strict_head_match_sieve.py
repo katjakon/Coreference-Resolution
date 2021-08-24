@@ -22,10 +22,8 @@ class StrictHeadMatchSieve(AbstractSieve):
     def resolve(self, cluster):
         unresolved = cluster.unresolved()
         for mention in unresolved:
-            if not mention.pronominal() and not mention.indefinite():
-                same_sent, prev_sent = cluster.antecedents(mention)
-                all_ant = same_sent + prev_sent
-                for antecedent in all_ant:
+            if not mention.pronominal and not mention.indefinite:
+                for antecedent in cluster.antecedents(mention):
                     has_cluster_feat = all((feat.has_feature(cluster,
                                                              antecedent,
                                                              mention)
