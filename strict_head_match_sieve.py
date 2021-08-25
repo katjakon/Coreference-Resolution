@@ -4,7 +4,6 @@ Strict Head Matching Sieve
 """
 
 from abstract_sieve import AbstractSieve
-from features.abstract_feature import AbstractMentionFeature, AbstractClusterFeature
 from features.cluster_head_match import ClusterHeadMatch
 from features.compatible_modifiers_only import CompatibleModifiersOnly
 from features.not_i_within_i import NotIWithinI
@@ -13,24 +12,39 @@ from features.word_inclusion import WordInclusion
 
 class StrictHeadMatchSieve(AbstractSieve):
 
-    def __init__(self, lang="english", modifiers=(r"JJ[R|S]?", r"NNP?S?")):
-        self.cluster_features = [ClusterHeadMatch(),
-                                 WordInclusion(lang),
-                                 NotIWithinI()]
-        self.mention_features = (CompatibleModifiersOnly(modifiers),)
+    """A class that implements the strict head match sieve.
+    This class has the features ClusterHeadMatch, WordInclusion,
+    NotIWithinI, CompatibleModifiersOnly.
+    All of these features have to apply for two mentions to be merged.
+    """
 
-    def resolve(self, cluster):
-        unresolved = cluster.unresolved()
+    def __init__(self,
+                 lang="english",
+                 modifiers={"JJ", "JJR", "JJS", "NN", "NNP", "NNS"}):
+        """Constructor of the StrictHeadMatchSieve instance.
+
+        Args:
+            lang (str): The language that should be used for stopwords.
+            modifiers: Iterable of valid tags for modifiers.
+        """
+        self.features = [ClusterHeadMatch(),
+                         WordInclusion(lang),
+                         NotIWithinI(),
+                         CompatibleModifiersOnly(modifiers)]
+
+    def resolve(self, clusters):
+        unresolved = clusters.unresolved()
         for mention in unresolved:
+            # Ignore pronominal and indefinite mentions.
             if not mention.pronominal and not mention.indefinite:
-                for antecedent in cluster.antecedents(mention):
-                    has_cluster_feat = all((feat.has_feature(cluster,
-                                                             antecedent,
-                                                             mention)
-                                           for feat in self.cluster_features))
-                    has_mention_feat = all((feat.has_feature(antecedent,
-                                                             mention)
-                                           for feat in self.mention_features))
-                    if has_mention_feat and has_cluster_feat:
-                        cluster.merge(antecedent, mention)
-                        break
+                for antecedent in clusters.antecedents(mention):
+                    if not antecedent.pronominal and not antecedent.indefinite:
+                        apply_all = self.apply_features(self.features,
+                                                        clusters,
+                                                        antecedent,
+                                                        mention)
+                        # Sieve is conjunctive, all features have to be True
+                        # for two mentions to be merged.
+                        if all(apply_all):
+                            clusters.merge(antecedent, mention)
+                            break

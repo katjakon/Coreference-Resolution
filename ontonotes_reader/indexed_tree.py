@@ -1,25 +1,29 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 15 13:28:59 2021
-
-@author: HP I5
+A tree structure that inherits from nlkt's ParentedTree that makes
+it possible to index leaves so that for every subtree the span can
+be identified.
 """
-from nltk.tree import Tree, ParentedTree
+from nltk.tree import ParentedTree
 
 
 class IndexedTree(ParentedTree):
 
-    def __init__(self, label, children=None, delimiter="_"):
+    def __init__(self, label, children=None):
         super().__init__(label, children)
         self.indexed = False
 
     def index(self):
+        """Transforms every leaf into tuple of token and its index.
+        (NP (DET the) (N dog)) -> (NP (DET the/0) (N dog/1))
+        """
         if not self.indexed:
-            leaf_pos = self.treepositions("leaves")
-            for idx, leaf in enumerate(leaf_pos):
-                # str(idx) is used because,
-                # print methods won't work otherwise.
-                self[leaf] = (self[leaf], str(idx))
+            # Indices for leaves.
+            positions = self.treepositions("leaves")
+            for idx, positions in enumerate(positions):
+                # str(idx) because repr/str methods won't work otherwise.
+                # (the problem lies somewhere in nltk's string methods)
+                self[positions] = (self[positions], str(idx))
             self._set_indexed()
 
     def _set_indexed(self):
@@ -29,12 +33,22 @@ class IndexedTree(ParentedTree):
                 child._set_indexed()
 
     def _token(self, leaf):
+        """Returns the word of a leaf (str)"""
         return leaf[0]
 
     def _index(self, leaf):
+        """Returns the index of a leaf (int)"""
         return int(leaf[1])
 
     def span(self):
+        """Returns the span of an IndexedTree.
+        The span is a tuple of the index of the first leaf
+        and the index of the last leaf + 1
+
+        Returns: 2-tuple of integers
+
+        Raises: Exception if tree is not indexed yet.
+        """
         if self.indexed:
             leaves = self.leaves(True)
             start = self._index(leaves[0])
@@ -43,6 +57,7 @@ class IndexedTree(ParentedTree):
         raise Exception
 
     def leaves(self, indexed=False):
+        """Returns the leaves of a tree. Optionally, without the indices."""
         leaves = []
         for child in self:
             if isinstance(child, IndexedTree):
@@ -56,4 +71,6 @@ class IndexedTree(ParentedTree):
 
     def pos(self):
         pos = super().pos()
+        if not self.indexed:
+            return pos
         return [(self._token(tok), p) for tok, p in pos]

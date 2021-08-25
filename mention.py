@@ -3,15 +3,13 @@
 Class that represents a mention aka a referential expression.
 A mention is definded by a unique id consisting of (sentence_index, start, end)
 """
-import re
-
 from nltk.tree import Tree
 
 
 class Mention:
 
     PRONOUNS = {"PRP", "DT", "PRP$"}
-    NOMINAL = re.compile(r"NN?P?S?")
+    NOMINAL = {"NN", "NP", "NNS", "NNP", "NNPS"}
     INDEFINTIE = {"a",
                   "an",
                   "some",
@@ -24,7 +22,19 @@ class Mention:
                   "there"}
 
     def __init__(self, mention_id, tree):
+        """Constructor for a Mention instance.
+
+        Args:
+            mention_id (tuple):
+                A three tuple where the first element is the sentence index,
+                the second is the start and the third is the end of a mention.
+            tree (IndexedTree):
+                A Indexed Tree object that specifies the syntactic structure
+                of the mention.
+        """
         self.id = mention_id
+        # Points to the representative mention of the current cluster.
+        # Initially, this is the mention itself.
         self.pointer = self
         self.tree = tree
         self.antecedents = None
@@ -36,31 +46,49 @@ class Mention:
 
     @property
     def words(self):
+        """Returns the token of a mention in a list."""
         return self._words
 
     @property
     def pos(self):
+        """Returns the pos tags of a mention in a list."""
         return self._pos
 
     @property
     def pronominal(self):
+        """Returns True if mention is a pronoun, False otherwise."""
         return self._pronominal
 
     @property
     def indefinite(self):
+        """Returns True if mention is considered an indefinite NP.
+        False otherwise."""
         return self._indefinite
 
     @property
     def head(self):
+        """Returns a token (str) that is considered the head of the mention."""
         return self._head
 
     def span(self):
+        "Returns a tuple consisting of the start and end index of the mention."
         return self.id[1], self.id[2]
 
     def index(self):
+        "Returns the index of the sentence that contains the mention."
         return self.id[0]
 
     def _is_pronominal(self, tree):
+        """Determines whether a mention is a pronoun or not.
+
+        A mention is considered a pronoun if it has a unary tree structure
+        and there is a pronoun label (PRP) in its tree structure.
+
+        Args:
+            tree (IndexedTree): An IndexedTree object.
+
+        Returns: Boolean
+        """
         # A pronoun is contained in a tree where each
         # node has exactly one child.
         if len(tree) == 1:
@@ -76,6 +104,16 @@ class Mention:
         return False
 
     def _is_indefinite(self, tree):
+        """Determines whether a mention is indefinite or not.
+
+        A mention is considered indefinite if its first word
+        is an indefinite determiner.
+
+        Args:
+            tree (IndexedTree): An IndexedTree object.
+
+        Returns: Boolean
+        """
         # Base case: Reached a leaf.
         if not isinstance(tree, Tree):
             # Leaf token is an indefinite determiner.
@@ -90,6 +128,16 @@ class Mention:
         return self._is_indefinite(tree[0])
 
     def _get_head(self, tree):
+        """Extracts the head noun of a mention.
+
+        The head is contained in the right most nominal child of
+        a tree structure. This is done recursively until a leaf is reached.
+
+        Args:
+            tree (IndexedTree): An IndexedTree object.
+
+        Returns: str
+        """
         # Base case: tree is a leaf.
         if not isinstance(tree, Tree):
             # Leaves are tuples of (token, index)
@@ -98,7 +146,7 @@ class Mention:
         # nominal constituent from right to left in all children.
         for i in range(len(tree)-1, -1, -1):
             child = tree[i]
-            if isinstance(child, Tree) and self.NOMINAL.search(child.label()):
+            if isinstance(child, Tree) and child.label() in self.NOMINAL:
                 return self._get_head(child)
         # This is a fall back: As english has right headedness in nouns,
         # the naive approach is to assume the last child contains the head.

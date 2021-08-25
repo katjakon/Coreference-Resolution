@@ -1,21 +1,49 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Aug 17 21:35:17 2021
-
-@author: HP I5
+A class for the Appositive feature.
 """
+from features.abstract_feature import AbstractMentionFeature
 
 
-class Appositive:
+class Appositive(AbstractMentionFeature):
+
+    """A feature class that represents an appositive construction
+    like 'the president, Joe Biden'.
+    """
 
     def __init__(self, allowed_labels=(",",), allowed_len=3):
+        """Constructor of an Appositive instance.
+
+        Args:
+            allowed_labels:
+                Iterable that contains labels that are
+                additionally allowed in an appositive construction.
+            allowed_len (int):
+                The maximum lenght an appositive construction is
+                allowed to have.
+
+        Raises:
+            Exception if allowed_len is less than 2.
+        """
         self.allowed_labels = allowed_labels
         if allowed_len < 2:
             raise Exception("Appostive Construction "
                             "must allow at least 2 children.")
         self.allowed_len = allowed_len
 
-    def has_feature(self, antecedent, mention):
+    def __call__(self, antecedent, mention):
+        """Returns True if antecedent and mention
+        are in an appositive construction.
+
+        An appositive construction is assumed if the
+        two mentions have the same parent that has no
+        more children than the allowed length and each of these
+        children are either the mention/antecedent or have an
+        allowed label.
+
+        Returns:
+            True if all of the above apply. False otherwise.
+        """
         ment_tree = mention.tree
         ant_tree = antecedent.tree
         # Possible only in same sentence.

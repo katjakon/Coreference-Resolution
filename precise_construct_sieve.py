@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Aug 19 20:43:56 2021
-
-@author: HP I5
+A partial implementation of the precise construct sieve.
 """
 
 from abstract_sieve import AbstractSieve
@@ -13,25 +11,42 @@ from features.predicate_nominative import PredicateNominative
 
 class PreciseConstructsSieve(AbstractSieve):
 
+    """This is a partial implementation of the precise construct sieve.
+    It has the features PredicateNominative, Acronyms and Appositive.
+
+    Raghunathan et. al. describes two more features for this sieve:
+        - role appositive:
+            Ignored here because of missing information and because
+            Appositive feature already covers most cases.
+        - relative pronoun:
+            Ignored here because relative pronouns are almost never
+            tagged as coreferential in Ontonotes corpus.
+    """
+
     def __init__(self, predicate={"be"}):
-        self.cluster_features = (PredicateNominative(),)
-        self.mention_features = (Acronyms(),
-                                 Appositive())
-        
+        """Constructor of PreciseConstructsSieve instance.
+
+        Args:
+            predicate:
+                Iterable of strings that represent valid predicates
+                for PredicateNominative feature.
+        """
+        self.features = [PredicateNominative(predicate),
+                         Acronyms(),
+                         Appositive()]
 
     def resolve(self, clusters):
         unresolved = clusters.unresolved()
         for mention in unresolved:
             if not mention.indefinite:
-                for ant in clusters.antecedents(mention):
-                    if not ant.indefinite:
-                        any_feat = False
-                        for feat in self.cluster_features:
-                            if feat.has_feature(clusters, ant, mention):
-                                any_feat = True
-                        for feat in self.mention_features:
-                            if feat.has_feature(ant, mention):
-                                any_feat = True
-                        if any_feat:
-                            clusters.merge(ant, mention)
+                for antecedent in clusters.antecedents(mention):
+                    if not antecedent.indefinite:
+                        apply_all = self.apply_features(self.features,
+                                                        clusters,
+                                                        antecedent,
+                                                        mention)
+                        # Sieve is disjunctive: if any feature
+                        # applies, two mentions can be merged.
+                        if any(apply_all):
+                            clusters.merge(antecedent, mention)
                             break

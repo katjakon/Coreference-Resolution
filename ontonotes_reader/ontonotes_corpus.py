@@ -7,7 +7,7 @@ Created on Mon Jul 12 13:28:07 2021
 import os
 import re
 
-from ontonotes_doc import OntonotesDoc
+from ontonotes_reader.ontonotes_doc import OntonotesDoc
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,16 +16,16 @@ class OntonotesCorpus:
 
     FILE_EXT = "conll"
 
-    def __init__(self, root, walk=False):
+    def __init__(self, root, files):
         self.root = os.path.join(ROOT, root)
-        self.files = []
+        self.files = files
         self.index = 0
 
-        f_suff = re.compile(r"[.].*" + self.FILE_EXT)
-        for file in os.listdir(self.root):
-            file_path = os.path.join(self.root, file)
-            if os.path.isfile(file_path) and re.search(f_suff, file):
-                self.files.append(file)
+        # f_suff = re.compile(r"[.].*" + self.FILE_EXT)
+        # for file in os.listdir(self.root):
+        #     file_path = os.path.join(self.root, file)
+        #     if os.path.isfile(file_path) and re.search(f_suff, file):
+        #         self.files.append(file)
 
     def documents(self, file_ids=None):
         docs = []
