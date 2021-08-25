@@ -2,7 +2,7 @@
 """
 A class for the Appositive feature.
 """
-from features.abstract_feature import AbstractMentionFeature
+from .abstract_feature import AbstractMentionFeature
 
 
 class Appositive(AbstractMentionFeature):

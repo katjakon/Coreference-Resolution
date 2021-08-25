@@ -3,10 +3,10 @@
 Not-i-within-i Feature class.
 """
 
-from features.abstract_feature import AbstractMentionFeature
+from .abstract_feature import AbstractClusterFeature
 
 
-class NotIWithinI(AbstractMentionFeature):
+class NotIWithinI(AbstractClusterFeature):
 
     """A class that represents the not-i-within-i Feature
     used to determine if one of the mentions is the child of the other.

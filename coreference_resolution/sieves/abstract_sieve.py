@@ -5,7 +5,7 @@ An abstract class for sieves.
 
 from abc import ABC, abstractmethod
 
-from features.abstract_feature import AbstractMentionFeature, AbstractClusterFeature
+from .features.abstract_feature import AbstractMentionFeature, AbstractClusterFeature
 
 
 class AbstractSieve(ABC):

@@ -3,10 +3,10 @@
 A partial implementation of the precise construct sieve.
 """
 
-from abstract_sieve import AbstractSieve
-from features.acronym import Acronyms
-from features.appositive import Appositive
-from features.predicate_nominative import PredicateNominative
+from .abstract_sieve import AbstractSieve
+from .features.acronym import Acronyms
+from .features.appositive import Appositive
+from .features.predicate_nominative import PredicateNominative
 
 
 class PreciseConstructsSieve(AbstractSieve):

@@ -2,7 +2,7 @@
 """
 A feature that determines if two mentions are acronyms of each other.
 """
-from features.abstract_feature import AbstractMentionFeature
+from .abstract_feature import AbstractMentionFeature
 
 
 class Acronyms(AbstractMentionFeature):

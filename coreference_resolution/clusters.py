@@ -5,9 +5,8 @@ Clusters are essentially a disjoint-set structure.
 """
 from collections import deque
 
-from ontonotes_reader.indexed_tree import IndexedTree
-
-from mention import Mention
+from .indexed_tree import IndexedTree
+from .mention import Mention
 
 
 class Clusters:

@@ -3,7 +3,7 @@
 Class that represents a mention aka a referential expression.
 A mention is definded by a unique id consisting of (sentence_index, start, end)
 """
-from nltk.tree import Tree
+from .indexed_tree import IndexedTree
 
 
 class Mention:
@@ -36,6 +36,12 @@ class Mention:
         # Points to the representative mention of the current cluster.
         # Initially, this is the mention itself.
         self.pointer = self
+        # Check if tree is compatible.
+        if not isinstance(tree, IndexedTree):
+            raise TypeError("Expected an IndexedTree.")
+        if not tree.indexed:
+            # TODO: Custom error
+            raise Exception
         self.tree = tree
         self.antecedents = None
         self._pronominal = self._is_pronominal(self.tree)
@@ -97,7 +103,7 @@ class Mention:
             if tree.label() in self.PRONOUNS:
                 return True
             # Accounts for cases like: (NP (PRP he))
-            elif isinstance(child, Tree):
+            elif isinstance(child, IndexedTree):
                 # This is recursive because pronouns can have structure:
                 # (NP (NP (PRP it)))
                 return self._is_pronominal(child)
@@ -115,7 +121,7 @@ class Mention:
         Returns: Boolean
         """
         # Base case: Reached a leaf.
-        if not isinstance(tree, Tree):
+        if not isinstance(tree, IndexedTree):
             # Leaf token is an indefinite determiner.
             if tree[0].lower() in self.INDEFINTIE:
                 return True
@@ -139,14 +145,14 @@ class Mention:
         Returns: str
         """
         # Base case: tree is a leaf.
-        if not isinstance(tree, Tree):
+        if not isinstance(tree, IndexedTree):
             # Leaves are tuples of (token, index)
             return tree[0]
         # Because of right headedness, we search for the first
         # nominal constituent from right to left in all children.
         for i in range(len(tree)-1, -1, -1):
             child = tree[i]
-            if isinstance(child, Tree) and child.label() in self.NOMINAL:
+            if isinstance(child, IndexedTree) and child.label() in self.NOMINAL:
                 return self._get_head(child)
         # This is a fall back: As english has right headedness in nouns,
         # the naive approach is to assume the last child contains the head.

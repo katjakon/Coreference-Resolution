@@ -3,10 +3,10 @@
 A class that represents a variant of the StrictHeadMatchSieve.
 It is missing the compatible word inclusion feature.
 """
-from strict_head_match_sieve import StrictHeadMatchSieve
-from features.cluster_head_match import ClusterHeadMatch
-from features.compatible_modifiers_only import CompatibleModifiersOnly
-from features.not_i_within_i import NotIWithinI
+from .strict_head_match_sieve import StrictHeadMatchSieve
+from .features.cluster_head_match import ClusterHeadMatch
+from .features.compatible_modifiers_only import CompatibleModifiersOnly
+from .features.not_i_within_i import NotIWithinI
 
 
 class StrictHeadRelaxInclusion(StrictHeadMatchSieve):
@@ -22,6 +22,6 @@ class StrictHeadRelaxInclusion(StrictHeadMatchSieve):
             modifers:
                 Iterable of string that represent valid tags for modifiers.
         """
-        self.cluster_features = [ClusterHeadMatch(),
-                                 NotIWithinI(),
-                                 CompatibleModifiersOnly(modifiers)]
+        self.features = [ClusterHeadMatch(),
+                         NotIWithinI(),
+                         CompatibleModifiersOnly(modifiers)]

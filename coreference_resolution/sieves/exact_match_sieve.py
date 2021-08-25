@@ -3,7 +3,7 @@
 A class that represents the exact sieve.
 It resolves cluster by linking mentions if they are the same string.
 """
-from abstract_sieve import AbstractSieve
+from .abstract_sieve import AbstractSieve
 
 
 class ExactMatchSieve(AbstractSieve):

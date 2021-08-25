@@ -3,7 +3,7 @@
 A data structure that represents a sentence with informations
 like syntactic structure, lemma and coreference informations.
 """
-from ontonotes_reader.indexed_tree import IndexedTree
+from .indexed_tree import IndexedTree
 
 
 class Sentence:

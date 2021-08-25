@@ -2,7 +2,7 @@
 """
 A class that implements the compatible modifiers feature.
 """
-from features.abstract_feature import AbstractMentionFeature
+from .abstract_feature import AbstractMentionFeature
 
 
 class CompatibleModifiersOnly(AbstractMentionFeature):

@@ -4,10 +4,11 @@ A feature that determines if an antecedent and a mention
 are in an predicate nominative construction
 """
 
-from ..ontonotes_reader.indexed_tree import IndexedTree
+from ..abstract_sieve import AbstractClusterFeature
+from ...indexed_tree import IndexedTree
 
 
-class PredicateNominative:
+class PredicateNominative(AbstractClusterFeature):
 
     SENT = {"S", "SBAR"}
     VP = {"VP"}

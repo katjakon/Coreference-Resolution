@@ -4,7 +4,7 @@ A class that represents the word inclusion feature
 """
 from nltk.corpus import stopwords
 
-from features.abstract_feature import AbstractClusterFeature
+from .abstract_feature import AbstractClusterFeature
 
 
 class WordInclusion(AbstractClusterFeature):

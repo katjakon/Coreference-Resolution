@@ -3,10 +3,10 @@
 A class that represents a variant of the StrictHeadMatchSieve.
 It is missing the compatible modifier feature.
 """
-from strict_head_match_sieve import StrictHeadMatchSieve
-from features.cluster_head_match import ClusterHeadMatch
-from features.not_i_within_i import NotIWithinI
-from features.word_inclusion import WordInclusion
+from .strict_head_match_sieve import StrictHeadMatchSieve
+from .features.cluster_head_match import ClusterHeadMatch
+from .features.not_i_within_i import NotIWithinI
+from .features.word_inclusion import WordInclusion
 
 
 class StrictHeadRelaxModifiers(StrictHeadMatchSieve):

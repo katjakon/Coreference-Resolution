@@ -2,8 +2,8 @@
 """
 Coreference resolution
 """
-from abstract_sieve import AbstractSieve
-from clusters import Clusters
+from .sieves.abstract_sieve import AbstractSieve
+from .clusters import Clusters
 
 
 class MultiPassResolution:
