@@ -166,6 +166,8 @@ def coreference_resolution(file, sieves, path_out):
     coref = MultiPassResolution(doc, sieves)
     coref.resolve()
     file_name = f"{doc.filename()}.csv"
+    if file_name in os.listdir(path_out):
+        logging.warning(f"File name {file_name} is a duplicate and was overwritten.")
     coref.to_csv(os.path.join(path_out, file_name))
     prec, rec, f1 = coref.evaluate()
     return (file_name, prec, rec, f1)
