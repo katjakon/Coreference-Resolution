@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# The value behind each sieve specifies the order in which
+# they are executed. Use -1 to not include a sieve in resolution.
 
 [Sieves]
 Exact_Match_Sieve = 1
