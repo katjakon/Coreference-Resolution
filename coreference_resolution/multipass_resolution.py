@@ -2,6 +2,8 @@
 """
 Coreference resolution
 """
+import csv
+
 from .sieves.abstract_sieve import AbstractSieve
 from .clusters import Clusters
 
@@ -13,7 +15,7 @@ class MultiPassResolution:
 
         Args:
             doc (Document):
-                A Document object where coreferential mention should
+                A Document object from which coreferential mention should
                 be extracted.
             sieve:
                 An iterable of sieves that inherit from AbstractSieve.
@@ -105,3 +107,15 @@ class MultiPassResolution:
             return len(true) / len(golds)
         except ZeroDivisionError:
             return 0
+
+    def to_csv(self, path):
+        with open(path, "w", encoding="utf-8", newline="") as csv_f:
+            csv_writer = csv.writer(csv_f, delimiter=";")
+            csv_writer.writerow([self.doc.path])
+            for repr_ment in self.clusters:
+                cluster = self.clusters[repr_ment]
+                if len(cluster) > 1:
+                    for mention in cluster:
+                        line = [mention.id, " ".join(mention.words)]
+                        csv_writer.writerow(line)
+                    csv_writer.writerow(["-", "-"])
