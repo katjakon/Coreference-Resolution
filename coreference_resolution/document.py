@@ -6,10 +6,10 @@ informations spanning multiple sentences like coreference infos.
 """
 import os
 
-from .ontonotes_sent import OntonotesSent
+from .sentence import Sentence
 
 
-class OntonotesDoc:
+class Document:
 
     def __init__(self, path):
         self._id = path
@@ -61,7 +61,7 @@ class OntonotesDoc:
                 line = line.rstrip()
                 # An empty line means that a sentence has ended.
                 if not line:
-                    sentence = OntonotesSent(sent_id, tmp_sentence)
+                    sentence = Sentence(sent_id, tmp_sentence)
                     sentences.append(sentence)
                     sent_id += 1
                     tmp_sentence = []
@@ -71,7 +71,7 @@ class OntonotesDoc:
             # There might still be a sentence left if
             # there is no empty line at the end.
             if tmp_sentence:
-                sentence = OntonotesSent(sent_id, tmp_sentence)
+                sentence = Sentence(sent_id, tmp_sentence)
                 sentences.append(sentence)
         return sentences
 

@@ -6,7 +6,7 @@ like syntactic structure, lemma and coreference informations.
 from ontonotes_reader.indexed_tree import IndexedTree
 
 
-class OntonotesSent:
+class Sentence:
 
     WORD_ID_COL = 2
     WORD_COL = 3
