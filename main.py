@@ -94,6 +94,8 @@ def get_sieves(config_file):
     Raises:
         OSError if config file has no section 'Sieves.'
     """
+    if not os.path.isfile(config_file):
+        raise FileNotFoundError(f"Config file {config_file} not found.")
     sieve_key = "Sieves"
     sieves = []
     config = configparser.ConfigParser()
