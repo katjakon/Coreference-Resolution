@@ -28,7 +28,7 @@ Strict_Head_Relax_Inclusion = -1
 ## Interpret Output
 For each document from which coreference information was extracted, there is one file in the output folder. The first line contains the path to the original file.
 After that follow clusters of coreferential mentions. Clusters are seperated by `-;-`. Each line in a cluster represents a mention. The first column is a 3-tuple where the 
-first element is the index of the sentence in which the mention appears in the document. The second element is the start index, the third the end index of the mention
+first element is the index of the sentence in which the mention appears. The second element is the start index, the third the end index of the mention
 in the respective sentence. The second column is the string of the mention.<br>
 Example: <br>
 ```
