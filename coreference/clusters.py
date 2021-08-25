@@ -4,6 +4,7 @@ A class that represents clusters in a document.
 Clusters are essentially a disjoint-set structure.
 """
 from collections import deque
+import logging
 
 from .indexed_tree import IndexedTree
 from .mention import Mention
@@ -165,7 +166,8 @@ class Clusters:
                     # Map found id to Mention object.
                     yield self.mentions[(index, *span)]
                 except KeyError:
-                    # TODO: Logging
+                    logging.warning(f"Unseen mention {(index, *span)} "
+                                    "in {self._doc.path} found.")
                     continue
             if not left_to_right:
                 next_tree = reversed(next_tree)

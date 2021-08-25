@@ -3,6 +3,7 @@
 Class that represents a mention aka a referential expression.
 A mention is definded by a unique id consisting of (sentence_index, start, end)
 """
+from .errors.errors import UnindexedTree
 from .indexed_tree import IndexedTree
 
 
@@ -40,8 +41,7 @@ class Mention:
         if not isinstance(tree, IndexedTree):
             raise TypeError("Expected an IndexedTree.")
         if not tree.indexed:
-            # TODO: Custom error
-            raise Exception
+            raise UnindexedTree("IndexedTree is not indexed.")
         self.tree = tree
         self.antecedents = None
         self._pronominal = self._is_pronominal(self.tree)

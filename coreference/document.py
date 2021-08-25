@@ -4,6 +4,7 @@ A data structure that represents a document.
 A document contains multiple Sentence objects and
 informations spanning multiple sentences like coreference infos.
 """
+import logging
 import os
 
 from .sentence import Sentence
@@ -12,8 +13,15 @@ from .sentence import Sentence
 class Document:
 
     def __init__(self, path):
-        self._id = path
+        self._path = path
         self._sentences = self._read_sentences(path)
+
+    @property
+    def path(self):
+        return self._path
+
+    def filename(self):
+        return os.path.split(self._path)[1].split(".")[0]
 
     def coreference_chains(self):
         """Returns a dictionary that contains coreference information.
@@ -61,10 +69,18 @@ class Document:
                 line = line.rstrip()
                 # An empty line means that a sentence has ended.
                 if not line:
-                    sentence = Sentence(sent_id, tmp_sentence)
-                    sentences.append(sentence)
-                    sent_id += 1
-                    tmp_sentence = []
+                    try:
+                        sentence = Sentence(sent_id, tmp_sentence)
+                    except (IndexError, ValueError):
+                        logging.warning(f"Malformed sentence {sent_id}"
+                                        "in {path} ignored.")
+                        continue
+
+                    else:
+                        sentences.append(sentence)
+                        sent_id += 1
+                    finally:
+                        tmp_sentence = []
                 else:
                     # Collect lines of a sentence.
                     tmp_sentence.append(line.split())

@@ -3,11 +3,14 @@
 A data structure that represents a sentence with informations
 like syntactic structure, lemma and coreference informations.
 """
+import logging
+
 from .indexed_tree import IndexedTree
 
 
 class Sentence:
 
+    DOC_COL = 0
     WORD_ID_COL = 2
     WORD_COL = 3
     POS_COL = 4
@@ -90,16 +93,13 @@ class Sentence:
         coref_stack = dict()
         ne_stack = []
         for line in conll_sentence:
-            try:
-                word = line[self.WORD_COL]
-                pos = line[self.POS_COL]
-                word_id = int(line[self.WORD_ID_COL])
-                coref = line[self.COREF_COL]
-                ne = line[self.NE_COL]
-                lemma = line[self.LEMMA_COL]
-            except IndexError:
-                # TODO
-                raise Exception
+            doc = line[self.DOC_COL]
+            word = line[self.WORD_COL]
+            pos = line[self.POS_COL]
+            word_id = int(line[self.WORD_ID_COL])
+            coref = line[self.COREF_COL]
+            ne = line[self.NE_COL]
+            lemma = line[self.LEMMA_COL]
             if lemma == "-":
                 lemma = None
             self._lemma.append(lemma)
@@ -114,11 +114,14 @@ class Sentence:
         # Some tree strings from ontonotes seem to be malformed
         try:
             self._tree = IndexedTree.fromstring(tree_str)
+        except ValueError:
+            logging.debug(f"Malformed tree structure in {doc} "
+                          f"in sentence {self._id}")
+            # Replace by a rudimentary tree structure.
+            self._tree = IndexedTree("NONE", self._words)
+        finally:
             # Indexing the tree helps to identify spanning subtrees.
             self._tree.index()
-        except ValueError:
-            # TODO: Logging
-            print(f"IGNORED {self._id}")
 
     def _update_coref(self, coref, word_id, stack):
         """Update the current coreference stack with
