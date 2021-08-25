@@ -76,39 +76,38 @@ class MultiPassResolution:
                     pairs.add(pair)
         return pairs
 
-    def precision(self):
-        """Computes precision score by dividing the number
-        of true coreferential mentions in current cluster by the number
-        of all extracted coreferential mentions.
+    def evaluate(self):
+        """Computes precision, recall and f1 score based
+        on pairwise comparisons of mentions in current clusters
+        and mentions specified in instance document.
 
         Returns:
-            float
+            3-tuple of floats: (precision, recall, f1)
         """
         extracted = self.extracted_pairs()
         golds = self.gold_pairs()
         true = golds.intersection(extracted)
-        try:
-            return len(true) / len(extracted)
-        except ZeroDivisionError:
-            return 0
-
-    def recall(self):
-        """Computes precision score by dividing the number
-        of true coreferential mentions in current cluster by the number
-        of coreferential mentions specified in instances's document.
-
-        Returns:
-            float
-        """
-        extracted = self.extracted_pairs()
-        golds = self.gold_pairs()
-        true = golds.intersection(extracted)
-        try:
-            return len(true) / len(golds)
-        except ZeroDivisionError:
-            return 0
+        n_true = len(true)
+        n_golds = len(golds)
+        n_extracted = len(extracted)
+        precision = 0
+        recall = 0
+        f1 = 0
+        if n_extracted:
+            precision = n_true / n_extracted
+        if n_golds:
+            recall = n_true / n_golds
+        if recall or precision:
+            f1 = (2*precision*recall) / (precision+recall)
+        return precision, recall, f1
 
     def to_csv(self, path):
+        """Writes found clusters to csv file.
+
+        First line contains path to document. Clusters are seperated
+        by a line with '-'. Each line represent a mention with the first
+        column specifing its id and the second its words.
+        """
         with open(path, "w", encoding="utf-8", newline="") as csv_f:
             csv_writer = csv.writer(csv_f, delimiter=";")
             csv_writer.writerow([self.doc.path])
