@@ -10,7 +10,6 @@ import logging
 import multiprocessing
 import os
 
-
 from coreference.document import Document
 from coreference.multipass_resolution import MultiPassResolution
 from coreference.sieves.exact_match_sieve import ExactMatchSieve
@@ -53,7 +52,7 @@ def find_language_dir(path, language="english"):
             lang_dir = os.path.join(root, language)
             break
     else:
-        logging.error(f"No dir '{language}' found in {path}")
+        logging.critical(f"No dir '{language}' found in {path}")
         raise OSError(f"Language Directory {language} not found.")
     return lang_dir
 
@@ -92,7 +91,8 @@ def get_sieves(config_file):
         list of sieve instances.
 
     Raises:
-        OSError if config file has no section 'Sieves.'
+        OSError if config file has no section 'Sieves.' or if given
+        file does not exist.
     """
     if not os.path.isfile(config_file):
         raise FileNotFoundError(f"Config file {config_file} not found.")
@@ -118,8 +118,11 @@ def get_sieves(config_file):
             # -1 tells us to ingore a sieve.
             if position == -1:
                 continue
+            # Add sieve instance to list with specified position.
             sieves.append((sieve(), position))
+    # Sort list according to values.
     sieves.sort(key=lambda x: x[1])
+    # Return only sieves, not values.
     return list(map(lambda x: x[0], sieves))
 
 
@@ -142,6 +145,7 @@ def write_eval_summary(path, eval_list):
     avg_recall = sum(recall for _, _, recall, _ in eval_list)/sum_doc
     avg_precision = sum(prec for _, prec, _, _ in eval_list)/sum_doc
     avg_f1 = sum(f1 for _, _, _, f1 in eval_list)/sum_doc
+    # Write information to file.
     with open(path, "w", encoding="utf-8", newline="") as file:
         csv_writer = csv.writer(file, delimiter=";")
         csv_writer.writerow(["file", "precision", "recall", "f1-score"])
@@ -168,6 +172,7 @@ def coreference_resolution(file, sieves, path_out):
     coref = MultiPassResolution(doc, sieves)
     coref.resolve()
     file_name = f"{doc.filename()}.csv"
+    # This might happen because we extract from nested directories.
     if file_name in os.listdir(path_out):
         logging.warning(f"File name {file_name} is a duplicate and was overwritten.")
     coref.to_csv(os.path.join(path_out, file_name))
@@ -177,7 +182,7 @@ def coreference_resolution(file, sieves, path_out):
 
 def main():
     parser = argparse.ArgumentParser(description="Coreference Resolution")
-    parser.add_argument("in_dir", help="Input directory with conll files.")
+    parser.add_argument("in_dir", help="Input directory with conll files. Can be nested.")
     parser.add_argument("out_dir", help="Name of output directory.")
     parser.add_argument("--config", nargs="?", default="config.txt",
                         help="Path to config file. Default is 'config.txt'")
@@ -185,9 +190,11 @@ def main():
                         help=("File extensions that should be considered. "
                               "Default is 'conll'"))
     parser.add_argument("--lang", nargs="?", default=None,
-                        help="A dir in in_dir from which files should be extracted.")
+                        help=("A subdirectory of in_dir "
+                              "from which files should be extracted. "
+                              "If default is used, all subdirectories are searched."))
     args = parser.parse_args()
-    # Get full paths
+    # Get absolute paths to files.
     path_in = os.path.join(ROOT, args.in_dir)
     path_out = os.path.join(ROOT, args.out_dir)
     if args.lang:
