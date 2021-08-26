@@ -62,3 +62,9 @@ path/to/example/file.conll
 ```
 <br>
 Additionally, the output directory contains a file `_summary.csv` that lists the evaluation metrics precision, recall and f1 for each file.
+
+## About
+
+Author: Katja Konermann (katja.konermann@uni-potsdam.de)<br>
+Course: Programmierung II<br>
+Summer semester 2021
