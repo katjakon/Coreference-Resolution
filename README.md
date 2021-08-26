@@ -1,7 +1,22 @@
 # Coreference-Resolution
 
+## Description
+This is an implementation of the multi-pass sieve for coreference resolution described by [Raghunathan et al. (2010)](https://aclanthology.org/D10-1048/). It applies multiple sieves to clusters of referential
+expressions in order to link coreferential NP.<br>
+This program takes files from the Ontonotes corpus in the conll format as input. Find out more [here](https://cemantix.org/data/ontonotes.html).
+
+## Requirements
+Written with Python 3.8.5.<br>
+See `requirements.txt`. <br>
+Download `nltk`'s stopword corpus by running:<br>
+```
+>>> import nltk
+>>> nltk.download('stopwords')
+```
+
+
 ## How to use
-Move your directory containing conll-files into this directory.
+Move your directory containing files from the Ontonotes corpus in the conll-format into this directory.
 <br>
 Run:<br>
 ```main.py [-h] [--config [CONFIG]] [--ext [EXT]] [--lang [LANG]] in_dir out_dir```<br>
@@ -10,12 +25,12 @@ Run:<br>
 + `out_dir`: A name for the directory where output files should be stored.
 + `--config`: The name of the config file where sieves are specified. This defaults to `config.txt`.
 + `--ext`: The extension files should have. This defaults to `conll`. If you only want to extract gold annotated file, set this to `gold_conll`.
-+ `--lang`: A subdirectory in `in_dir` from which files should be extracted. Set this to `english` to only extract english files from nested Ontonotes corpus.
++ `--lang`: A subdirectory in `in_dir` from which files should be extracted. Set this to `english` to only extract english files from nested Ontonotes corpus. Per default all subdirectories will be searched.
 
 Examples:<br>
 `main.py corpus output`<br>
 `main.py --ext gold_conll corpus output`<br>
-`main.py --ext gold_conll -- lang english nested_corpus output`
+`main.py --ext gold_conll --lang english nested_corpus output`
 
 
 ### Adjust Sieves
