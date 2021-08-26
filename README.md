@@ -48,9 +48,14 @@ Strict_Head_Relax_Inclusion = -1
 
 ### Interpret Output
 For each document from which coreference information was extracted, there is one file in the output folder. The first line contains the path to the original file.
-After that follow clusters of coreferential mentions. Clusters are seperated by `-;-`. Each line in a cluster represents a mention. The first column is a 3-tuple where the 
+After that follow clusters of coreferential mentions. Clusters are seperated by `-;-`. <br>
+Each line in a cluster represents a mention. The first column is a 3-tuple where the 
 first element is the index of the sentence in which the mention appears. The second element is the start index, the third the end index of the mention
-in the respective sentence. The second column is the string of the mention.<br>
+in the respective sentence.<br>
+For example, assume the following sentence is at index 3:
+The<sup>0</sup> dog<sup>1</sup> is<sup>2</sup> happy<sup>3</sup> about<sup>4</sup> his<sup>5</sup> new<sup>6</sup> toy<sup>7</sup><br>
+
+The second column is the string of the mention.<br>
 Example: <br>
 ```
 path/to/example/file.conll
