@@ -29,14 +29,16 @@ class NotIWithinI(AbstractClusterFeature):
             False otherwise.
         """
         ant_cluster = clusters[antecedent]
-        # A i within i construction can only appear in same sentence.
-        for ant in ant_cluster:
-            if mention.index() == ant.index():
-                # Assuming well formed syntax trees, a mention is
-                # within the constituent of another mention
-                # if their spans overlap.
-                start1, end1 = mention.span()
-                start2, end2 = ant.span()
-                if start1 <= end2 and end1 >= start2:
-                    return False
+        ment_cluster = clusters[mention]
+        for ment in ment_cluster:
+            for ant in ant_cluster:
+                # A i within i construction can only appear in same sentence.
+                if ment.index() == ant.index():
+                    # Assuming well formed syntax trees, a mention is
+                    # within the constituent of another mention
+                    # if their spans overlap.
+                    start1, end1 = ment.span()
+                    start2, end2 = ant.span()
+                    if start1 <= end2 and end1 >= start2:
+                        return False
         return True

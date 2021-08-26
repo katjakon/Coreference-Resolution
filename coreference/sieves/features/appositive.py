@@ -2,7 +2,7 @@
 """
 A class for the Appositive feature.
 """
-from nlkt.tree import Tree
+from nltk.tree import Tree
 
 from .abstract_feature import AbstractMentionFeature
 

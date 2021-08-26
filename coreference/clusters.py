@@ -56,13 +56,13 @@ class Clusters:
         """Performs union of two clusters of mentions
         if they belong two different clusters.
 
+        After a merge, the representative of one mention
+        will not be present in self.clusters. Its value will have been merged
+        with the value of the other mention's representative
+
         Args:
-            first (Mention):
-                A Mention object. Its representative will be the new
-                representative for both mentions.
-            second (Mention):
-                A Mention object. After the union its representative will
-                not be present in self.clusters.
+            first (Mention): A Mention object.
+            second (Mention): A Mention object.
 
         Returns:
             True if the clusters of the mentions have been merged.
@@ -73,13 +73,20 @@ class Clusters:
         # Both mentions are already in the same cluster.
         if repr_first == repr_second:
             return False
+        # This means it appear earlier as the id specifies its position.
+        if repr_first.id < repr_second.id:
+            earlier = repr_first
+            latter = repr_second
+        else:
+            earlier = repr_second
+            latter = repr_first
         # Perfom union of mentions and delete second (later) cluster.
-        second_mentions = self.clusters.pop(repr_second)
-        first_mentions = self.clusters[repr_first]
-        self.clusters[repr_first] = first_mentions.union(second_mentions)
+        second_mentions = self.clusters.pop(latter)
+        first_mentions = self.clusters[earlier]
+        self.clusters[earlier] = first_mentions.union(second_mentions)
         # Set new pointers for all mentions in second cluster
         for mention in second_mentions:
-            mention.pointer = repr_first
+            mention.pointer = earlier
         return True
 
     def unresolved(self):
