@@ -10,7 +10,7 @@ from .abstract_feature import AbstractClusterFeature
 class WordInclusion(AbstractClusterFeature):
 
     """A class that implements the word inclusion feature.
-    Because it is assumed that a mention contains no more novel
+    Because it is assumed that a mention contains no more novel information
     than its antecedent, the set of non-stopwords of the mention cluster
     should be a subset of the set of non-stopwords of the antecedent cluster.
     NLTK's stopword corpus is used.

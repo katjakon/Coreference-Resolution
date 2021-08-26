@@ -6,6 +6,8 @@ be identified.
 """
 from nltk.tree import ParentedTree
 
+from .errors.errors import UnindexedTree
+
 
 class IndexedTree(ParentedTree):
 
@@ -27,6 +29,7 @@ class IndexedTree(ParentedTree):
             self._set_indexed()
 
     def _set_indexed(self):
+        """Sets attribute indexed recursively"""
         self.indexed = True
         for child in self:
             if isinstance(child, IndexedTree):
@@ -54,7 +57,7 @@ class IndexedTree(ParentedTree):
             start = self._index(leaves[0])
             end = self._index(leaves[-1]) + 1
             return start, end
-        raise Exception
+        raise UnindexedTree("Tree is not indexed yet. Call index().")
 
     def leaves(self, indexed=False):
         """Returns the leaves of a tree. Optionally, without the indices."""

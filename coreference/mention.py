@@ -11,7 +11,7 @@ class Mention:
 
     PRONOUNS = {"PRP", "DT", "PRP$"}
     NOMINAL = {"NN", "NP", "NNS", "NNP", "NNPS"}
-    INDEFINTIE = {"a",
+    INDEFINITE = {"a",
                   "an",
                   "some",
                   "no",
@@ -73,7 +73,7 @@ class Mention:
 
     @property
     def head(self):
-        """Returns a token (str) that is considered the head of the mention."""
+        """Returns a token (str) that is considered the head noun of the mention."""
         return self._head
 
     def span(self):
@@ -123,7 +123,7 @@ class Mention:
         # Base case: Reached a leaf.
         if not isinstance(tree, IndexedTree):
             # Leaf token is an indefinite determiner.
-            if tree[0].lower() in self.INDEFINTIE:
+            if tree[0].lower() in self.INDEFINITE:
                 return True
             # Obviously, this is a very relaxed heuristic,
             # e.g. bare NPs will always be interpreted as definite.

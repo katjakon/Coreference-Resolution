@@ -2,6 +2,8 @@
 """
 A class for the Appositive feature.
 """
+from nlkt.tree import Tree
+
 from .abstract_feature import AbstractMentionFeature
 
 
@@ -23,12 +25,12 @@ class Appositive(AbstractMentionFeature):
                 allowed to have.
 
         Raises:
-            Exception if allowed_len is less than 2.
+            ValueError if allowed_len is less than 2.
         """
         self.allowed_labels = allowed_labels
         if allowed_len < 2:
-            raise Exception("Appostive Construction "
-                            "must allow at least 2 children.")
+            raise ValueError("Appostive Construction "
+                             "must allow at least 2 children.")
         self.allowed_len = allowed_len
 
     def __call__(self, antecedent, mention):
@@ -63,7 +65,9 @@ class Appositive(AbstractMentionFeature):
                         for child in parent_ant:
                             is_ant = child is ant_tree
                             is_ment = child is ment_tree
-                            is_allowed = child.label() in self.allowed_labels
+                            is_allowed = False
+                            if isinstance(child, Tree):
+                                is_allowed = child.label() in self.allowed_labels
                             if not (is_ant or is_ment or is_allowed):
                                 appositive = False
                         if appositive:
